@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.voting.ui.theme.purple
 
 @Composable
-fun RoundedButton(text: String, isEnabled : Boolean = true, onClick: () -> Unit, textColor : Color = Color.White) {
+fun RoundedBackgroundButton(text: String, isEnabled : Boolean = true, onClick: () -> Unit, textColor : Color = Color.White) {
     GradientButton(
         onClick = onClick,
         modifier = Modifier.padding(vertical = 5.dp).fillMaxWidth(),

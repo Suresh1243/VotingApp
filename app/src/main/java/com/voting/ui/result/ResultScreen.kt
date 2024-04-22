@@ -25,7 +25,7 @@ import com.voting.ui.model.CandidateModel
 import com.voting.ui.model.ResultModel
 import com.voting.ui.theme.VotingAppTheme
 import com.voting.ui.theme.purple
-import com.voting.utils.RoundedButton
+import com.voting.utils.RoundedBackgroundButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")
@@ -37,7 +37,7 @@ fun ResultScreen(navController: NavController) {
     val list = arrayListOf<ResultModel>().apply {
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Conservative and Unionist Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -45,7 +45,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Labour Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -53,7 +53,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Liberal Democrats",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -61,7 +61,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Green Party of England and Wales",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -69,7 +69,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Brexit Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -77,7 +77,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Independent",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -85,7 +85,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Scottish National Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -93,7 +93,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "UKIP",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -101,7 +101,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Plaid Cymru",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -109,7 +109,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Yorkshire Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -117,7 +117,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Christian Peoples Alliance",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -125,7 +125,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Official Monster Raving Loony Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -133,7 +133,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Scottish Green Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -141,7 +141,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Social Democratic Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -149,7 +149,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
+                name = "Liberal Party",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
@@ -157,15 +157,7 @@ fun ResultScreen(navController: NavController) {
         )
         add(
             ResultModel(
-                name = "Test Candidate",
-                mobile = "9876543210",
-                selectedValue = "",
-                count = 10
-            )
-        )
-        add(
-            ResultModel(
-                name = "Test Candidate",
+                name = "Alliance Party of Northern Ireland",
                 mobile = "9876543210",
                 selectedValue = "",
                 count = 10
