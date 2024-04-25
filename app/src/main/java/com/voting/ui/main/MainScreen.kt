@@ -15,12 +15,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.voting.R
+import com.voting.appClass.AppClass.Companion.list
 import com.voting.routing.Screen
 import com.voting.ui.drawer.DrawerBody
 import com.voting.ui.drawer.DrawerHeader
@@ -29,6 +33,7 @@ import com.voting.ui.localDatabase.VotingLocalDataBase
 import com.voting.ui.model.CandidateModel
 import com.voting.ui.theme.VotingAppTheme
 import com.voting.ui.theme.purple
+import com.voting.ui.theme.white
 import com.voting.utils.RoundedBackgroundButton
 import kotlinx.coroutines.launch
 
@@ -42,28 +47,11 @@ fun MainScreen(navController: NavController) {
     }
     val checked = remember { mutableStateOf(false) }
     val scaffoldState = rememberScaffoldState()
-    val scope =  rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     var isLogout by remember { mutableStateOf(false) }
+    var isSubmit by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-    val list = arrayListOf<CandidateModel>().apply {
-        add(CandidateModel(name = "Conservative and Unionist Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Labour Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Liberal Democrats", mobile = "9876543210"))
-        add(CandidateModel(name = "Green Party of England and Wales", mobile = "9876543210"))
-        add(CandidateModel(name = "Brexit Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Independent", mobile = "9876543210"))
-        add(CandidateModel(name = "Scottish National Party", mobile = "9876543210"))
-        add(CandidateModel(name = "UKIP", mobile = "9876543210"))
-        add(CandidateModel(name = "Plaid Cymru", mobile = "9876543210"))
-        add(CandidateModel(name = "Yorkshire Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Christian Peoples Alliance", mobile = "9876543210"))
-        add(CandidateModel(name = "Official Monster Raving Loony Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Scottish Green Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Social Democratic Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Liberal Party", mobile = "9876543210"))
-        add(CandidateModel(name = "Alliance Party of Northern Ireland", mobile = "9876543210"))
-    }
-
+    var selectedOption by remember { mutableStateOf("") }
 
     VotingAppTheme {
         androidx.compose.material.Scaffold(
@@ -98,141 +86,103 @@ fun MainScreen(navController: NavController) {
             drawerBackgroundColor = purple
         ) { paddingValues ->
             Modifier.padding(
-                bottom = paddingValues.calculateBottomPadding())
+                bottom = paddingValues.calculateBottomPadding()
+            )
             Column(
                 modifier = Modifier
-                    .background(color = purple)
+                    .background(color = white)
                     .verticalScroll(scrollState)
             ) {
                 Spacer(Modifier.height(10.dp))
 
-                Column {
-                    list.forEachIndexed { index, candidateModel ->
-                        Card(
-                            modifier = Modifier
-                                .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
-                                .fillMaxWidth()
-                                .height(280.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
-                        ) {
-                            Spacer(Modifier.height(10.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_vote),
-                                    contentDescription = "Image",
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .width(40.dp)
-                                        .height(40.dp)
-                                )
-                                Column {
-                                    Text(
-                                        candidateModel.name ?: "",
-                                        fontSize = 14.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .padding(vertical = 5.dp, horizontal = 10.dp)
-                                    )
-                                    Text(
-                                        candidateModel.mobile ?: "",
-                                        fontSize = 14.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .padding(vertical = 5.dp, horizontal = 10.dp)
-                                    )
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    list.forEach { name ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = (name == selectedOption),
+                                onClick = { selectedOption = name }
+                            )
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(start = 8.dp).clickable {
+                                    selectedOption = name
                                 }
-                            }
-                            Spacer(Modifier.height(10.dp))
-                            Divider(
-                                thickness = 1.5.dp,
-                                color = Color.Gray,
-                                modifier = Modifier.fillMaxWidth()
                             )
-                            Spacer(Modifier.height(10.dp))
-                            val isChecked = remember { mutableStateOf(false) }
-
-                            Row(modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    /* list.forEachIndexed { index, candidateModel ->
-                                        candidateModel.selectedValue = false
-                                    }
-                                    candidateModel.selectedValue = true*/
-                                    isChecked.value = !isChecked.value
-                                }, verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    checked = isChecked.value,
-                                    onCheckedChange = {
-                                        /*list.forEachIndexed { index, candidateModel ->
-                                            candidateModel.selectedValue = false
-                                        }
-                                        candidateModel.selectedValue = true*/
-                                        isChecked.value = !isChecked.value
-                                    }
-                                )
-                                Text("Ballot", modifier = Modifier.fillMaxWidth())
-                            }
-                            Spacer(Modifier.height(10.dp))
-                            Divider(
-                                thickness = 1.5.dp,
-                                color = Color.Gray,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Spacer(Modifier.height(10.dp))
-                            Box(Modifier.padding(15.dp)) {
-                                RoundedBackgroundButton(
-                                    text = "Continue",
-                                    onClick = {
-
-                                    }
-                                )
-                            }
                         }
                     }
+
                 }
+                Box(Modifier.padding(15.dp)) {
+                    RoundedBackgroundButton(
+                        text = "Submit",
+                        onClick = {
+                            isSubmit = true
+                        }
+                    )
+                }
+
+            }
+            if (isLogout) {
+                AlertDialog(
+                    onDismissRequest = {
+                        isLogout = false
+                    },
+                    title = { Text(stringResource(id = R.string.app_name)) },
+                    text = { Text("Are you sure you want to logout?") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                preferenceManager.saveData("isLogin", false)
+                                navController.navigate(
+                                    Screen.LoginScreen.route
+                                ) {
+                                    popUpTo(Screen.MainScreen.route) {
+                                        inclusive = true
+                                    }
+                                }
+                                isLogout = false
+                            }
+                        ) {
+                            Text("Logout")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                isLogout = false
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+            if (isSubmit) {
+                AlertDialog(
+                    onDismissRequest = {
+                        isLogout = false
+                    },
+                    title = { Text(stringResource(id = R.string.app_name)) },
+                    text = { Text("Thanks for Voting to $selectedOption") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                selectedOption = ""
+                                isSubmit = false
+                            }
+                        , modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Ok")
+                        }
+                    }
+                )
             }
 
         }
-        if (isLogout) {
-            AlertDialog(
-                onDismissRequest = {
-                    isLogout = false
-                },
-                title = { Text(stringResource(id = R.string.app_name)) },
-                text = { Text("Are you sure you want to logout?") },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            preferenceManager.saveData("isLogin", false)
-                            navController.navigate(
-                                Screen.LoginScreen.route
-                            ) {
-                                popUpTo(Screen.MainScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                            isLogout = false
-                        }
-                    ) {
-                        Text("Logout")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            isLogout = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-            )
-        }
-
 
     }
-
 }

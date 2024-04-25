@@ -51,7 +51,7 @@ fun DrawerHeader(){
 fun DrawerBody(closeNavDrawer: () -> Unit, onLogout: () -> Unit) {
     Column {
         DrawerMenuItem(
-            text = "Result",
+            text = "Summary of votes for parties",
             onItemClick = {
                 closeNavDrawer()
             }

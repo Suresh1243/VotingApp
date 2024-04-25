@@ -21,6 +21,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,6 +31,7 @@ import com.voting.routing.Screen
 import com.voting.ui.localDatabase.VotingLocalDataBase
 import com.voting.ui.theme.VotingAppTheme
 import com.voting.ui.theme.purple
+import com.voting.ui.theme.white
 import com.voting.utils.BorderButton
 import com.voting.utils.RoundedBackgroundButton
 import com.voting.utils.isValidEmail
@@ -42,6 +45,7 @@ fun LoginScreen(navController: NavController) {
     val preferenceManager = remember {
         VotingLocalDataBase(context)
     }
+    var isLoggedInVoter by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val db = Firebase.firestore
@@ -117,17 +121,20 @@ fun LoginScreen(navController: NavController) {
                                     text = "Login",
                                     onClick = {
                                         if (email.isNotEmpty()) {
-                                            if (!isValidEmail(email.trim())) {
+                                            if (!isValidEmail(email.toString())) {
                                                 if (password.isNotEmpty()) {
+                                                    isLoggedInVoter = true
                                                     db.collection("users")
                                                         .get()
                                                         .addOnSuccessListener { result ->
                                                             if (result.isEmpty) {
+
                                                                 Toast.makeText(
                                                                     context,
                                                                     "Invalid user.",
                                                                     Toast.LENGTH_LONG
                                                                 ).show()
+                                                                isLoggedInVoter = false
                                                                 return@addOnSuccessListener
                                                             } else {
                                                                 for (document in result) {
@@ -135,7 +142,7 @@ fun LoginScreen(navController: NavController) {
                                                                         "TAG",
                                                                         "setOnClick: $document"
                                                                     )
-                                                                    if (document.data["email"] == email &&
+                                                                    if (document.data["email"] == email.lowercase() &&
                                                                         document.data["password"] == password
                                                                     ) {
                                                                         preferenceManager.saveData(
@@ -154,12 +161,24 @@ fun LoginScreen(navController: NavController) {
                                                                                 inclusive = true
                                                                             }
                                                                         }
+                                                                        isLoggedInVoter = false
+                                                                    } else if (document.data["email"] == email.lowercase() &&
+                                                                        document.data["password"] != password
+                                                                    ) {
+                                                                        Toast.makeText(
+                                                                            context,
+                                                                            "Invalid password.",
+                                                                            Toast.LENGTH_LONG
+                                                                        ).show()
+                                                                        isLoggedInVoter = false
+                                                                        return@addOnSuccessListener
                                                                     } else {
                                                                         Toast.makeText(
                                                                             context,
                                                                             "Invalid user.",
                                                                             Toast.LENGTH_LONG
                                                                         ).show()
+                                                                        isLoggedInVoter = false
                                                                         return@addOnSuccessListener
                                                                     }
                                                                 }
@@ -172,6 +191,7 @@ fun LoginScreen(navController: NavController) {
                                                                 exception.message.toString(),
                                                                 Toast.LENGTH_LONG
                                                             ).show()
+                                                            isLoggedInVoter = false
                                                         }
                                                 } else {
                                                     Toast.makeText(
@@ -187,6 +207,7 @@ fun LoginScreen(navController: NavController) {
                                                     "Please enter valid email.",
                                                     Toast.LENGTH_LONG
                                                 ).show()
+
                                             }
                                         } else {
                                             Toast.makeText(
@@ -217,7 +238,21 @@ fun LoginScreen(navController: NavController) {
 
             }
 
-
+            if (isLoggedInVoter) {
+                Dialog(
+                    onDismissRequest = { },
+                    DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(white, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        CircularProgressIndicator(color = purple)
+                    }
+                }
+            }
         }
     }
 }

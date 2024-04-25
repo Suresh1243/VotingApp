@@ -1,7 +1,6 @@
 package com.voting.ui.register
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -9,36 +8,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
-import com.voting.R
-import com.voting.routing.Screen
-import com.voting.ui.theme.VotingAppTheme
-import com.voting.utils.BorderButton
-import com.voting.utils.RoundedBackgroundButton
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.voting.R
+import com.voting.routing.Screen
 import com.voting.ui.localDatabase.VotingLocalDataBase
+import com.voting.ui.theme.VotingAppTheme
 import com.voting.ui.theme.purple
 import com.voting.ui.theme.white
+import com.voting.utils.BorderButton
+import com.voting.utils.RoundedBackgroundButton
 import com.voting.utils.isValidEmail
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -49,6 +43,7 @@ fun RegisterScreen(navController: NavController) {
     val preferenceManager = remember {
         VotingLocalDataBase(context)
     }
+    var isRegisterVoter by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -128,11 +123,12 @@ fun RegisterScreen(navController: NavController) {
                                     onClick = {
                                         if (name.isNotEmpty()) {
                                             if (email.isNotEmpty()) {
-                                                if (!isValidEmail(email.trim())) {
+                                                if (!isValidEmail(email)) {
                                                     if (password.isNotEmpty()) {
+                                                        isRegisterVoter = true
                                                         val user = hashMapOf(
                                                             "name" to name,
-                                                            "email" to email,
+                                                            "email" to email.lowercase(),
                                                             "password" to password
                                                         )
                                                         db.collection("users")
@@ -142,7 +138,10 @@ fun RegisterScreen(navController: NavController) {
                                                                     db.collection("users")
                                                                         .add(user)
                                                                         .addOnSuccessListener { documentReference ->
-                                                                            preferenceManager.saveData("isLogin", true)
+                                                                            preferenceManager.saveData(
+                                                                                "isLogin",
+                                                                                true
+                                                                            )
                                                                             Toast.makeText(
                                                                                 context,
                                                                                 "Register successfully.",
@@ -155,17 +154,20 @@ fun RegisterScreen(navController: NavController) {
                                                                                     inclusive = true
                                                                                 }
                                                                             }
+                                                                            isRegisterVoter = false
                                                                         }
                                                                         .addOnFailureListener { e ->
+
                                                                             Toast.makeText(
                                                                                 context,
                                                                                 e.message.toString(),
                                                                                 Toast.LENGTH_SHORT
                                                                             ).show()
+                                                                            isRegisterVoter = false
                                                                         }
                                                                 } else {
                                                                     for (document in result) {
-                                                                        if (document.data["email"] == email &&
+                                                                        if (document.data["email"] == email.lowercase() &&
                                                                             document.data["password"] == password
                                                                         ) {
                                                                             Toast.makeText(
@@ -173,12 +175,16 @@ fun RegisterScreen(navController: NavController) {
                                                                                 "Already exists.",
                                                                                 Toast.LENGTH_SHORT
                                                                             ).show()
+                                                                            isRegisterVoter = false
                                                                             return@addOnSuccessListener
                                                                         } else {
                                                                             db.collection("users")
                                                                                 .add(user)
                                                                                 .addOnSuccessListener { documentReference ->
-                                                                                    preferenceManager.saveData("isLogin", true)
+                                                                                    preferenceManager.saveData(
+                                                                                        "isLogin",
+                                                                                        true
+                                                                                    )
                                                                                     Toast.makeText(
                                                                                         context,
                                                                                         "Register successfully.",
@@ -187,13 +193,11 @@ fun RegisterScreen(navController: NavController) {
                                                                                     navController.navigate(
                                                                                         Screen.MainScreen.route
                                                                                     ) {
-                                                                                        popUpTo(
-                                                                                            Screen.RegisterScreen.route
-                                                                                        ) {
-                                                                                            inclusive =
-                                                                                                true
+                                                                                        popUpTo(Screen.RegisterScreen.route) {
+                                                                                            inclusive = true
                                                                                         }
                                                                                     }
+                                                                                    isRegisterVoter = false
                                                                                 }
                                                                                 .addOnFailureListener { e ->
                                                                                     Toast.makeText(
@@ -201,6 +205,7 @@ fun RegisterScreen(navController: NavController) {
                                                                                         e.message.toString(),
                                                                                         Toast.LENGTH_SHORT
                                                                                     ).show()
+                                                                                    isRegisterVoter = false
                                                                                 }
                                                                         }
                                                                     }
@@ -212,6 +217,7 @@ fun RegisterScreen(navController: NavController) {
                                                                     exception.message.toString(),
                                                                     Toast.LENGTH_SHORT
                                                                 ).show()
+                                                                isRegisterVoter = false
                                                             }
                                                     } else {
                                                         Toast.makeText(
@@ -221,17 +227,18 @@ fun RegisterScreen(navController: NavController) {
                                                         ).show()
 
                                                     }
-                                                }else{
+                                                } else {
                                                     Toast.makeText(
                                                         context,
-                                                        "Please enter valid email.",
+                                                        "Please enter email.",
                                                         Toast.LENGTH_LONG
                                                     ).show()
+
                                                 }
                                             } else {
                                                 Toast.makeText(
                                                     context,
-                                                    "Please enter email.",
+                                                    "Please enter valid email.",
                                                     Toast.LENGTH_LONG
                                                 ).show()
 
@@ -269,7 +276,21 @@ fun RegisterScreen(navController: NavController) {
 
 
             }
-
+            if (isRegisterVoter) {
+                Dialog(
+                    onDismissRequest = { },
+                    DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(white, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        CircularProgressIndicator(color = purple)
+                    }
+                }
+            }
 
 
         }

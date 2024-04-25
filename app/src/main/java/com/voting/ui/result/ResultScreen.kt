@@ -177,7 +177,7 @@ fun ResultScreen(navController: NavController) {
                 SmallTopAppBar(
                     title = {
                         Text(
-                            text = "Result", color = Color.White,
+                            text = "Summary of votes for parties", color = Color.White,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
@@ -215,14 +215,14 @@ fun ResultScreen(navController: NavController) {
                         ) {
                             Spacer(Modifier.height(10.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_vote),
-                                    contentDescription = "Image",
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .width(40.dp)
-                                        .height(40.dp)
-                                )
+//                                Image(
+//                                    painter = painterResource(id = R.drawable.ic_vote),
+//                                    contentDescription = "Image",
+//                                    contentScale = ContentScale.Fit,
+//                                    modifier = Modifier
+//                                        .width(40.dp)
+//                                        .height(40.dp)
+//                                )
                                 Column {
                                     Text(
                                         candidateModel.name ?: "",
@@ -231,13 +231,13 @@ fun ResultScreen(navController: NavController) {
                                         modifier = Modifier
                                             .padding(vertical = 5.dp, horizontal = 10.dp)
                                     )
-                                    Text(
-                                        candidateModel.mobile ?: "",
-                                        fontSize = 14.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .padding(vertical = 5.dp, horizontal = 10.dp)
-                                    )
+//                                    Text(
+//                                        candidateModel.mobile ?: "",
+//                                        fontSize = 14.sp,
+//                                        color = Color.Black,
+//                                        modifier = Modifier
+//                                            .padding(vertical = 5.dp, horizontal = 10.dp)
+//                                    )
                                 }
                             }
                             Spacer(Modifier.height(10.dp))
