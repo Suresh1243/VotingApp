@@ -49,6 +49,7 @@ fun MainScreen(navController: NavController) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     var isLogout by remember { mutableStateOf(false) }
+    var isAlready by remember { mutableStateOf(false) }
     var isSubmit by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     var selectedOption by remember { mutableStateOf("") }
@@ -94,7 +95,13 @@ fun MainScreen(navController: NavController) {
                     .verticalScroll(scrollState)
             ) {
                 Spacer(Modifier.height(10.dp))
-
+                Text(
+                    text = "Please Vote for any of the party",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                )
+                Spacer(Modifier.height(10.dp))
                 Column(
                     modifier = Modifier.padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -108,9 +115,11 @@ fun MainScreen(navController: NavController) {
                             Text(
                                 text = name,
                                 style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 8.dp).clickable {
-                                    selectedOption = name
-                                }
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .clickable {
+                                        selectedOption = name
+                                    }
                             )
                         }
                     }
@@ -120,7 +129,12 @@ fun MainScreen(navController: NavController) {
                     RoundedBackgroundButton(
                         text = "Submit",
                         onClick = {
-                            isSubmit = true
+                            if(preferenceManager.getData("isVote")) {
+                                isAlready = true
+                            }else{
+                                isSubmit = true
+                            }
+
                         }
                     )
                 }
@@ -161,6 +175,25 @@ fun MainScreen(navController: NavController) {
                     }
                 )
             }
+            if (isAlready) {
+                AlertDialog(
+                    onDismissRequest = {
+                        isLogout = false
+                    },
+                    title = { Text(stringResource(id = R.string.app_name)) },
+                    text = { Text("Sorry, you have already voted for a party.") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                isAlready = false
+                            }
+                        ) {
+                            Text("Ok")
+                        }
+                    },
+                    dismissButton = {}
+                )
+            }
             if (isSubmit) {
                 AlertDialog(
                     onDismissRequest = {
@@ -173,6 +206,7 @@ fun MainScreen(navController: NavController) {
                             onClick = {
                                 selectedOption = ""
                                 isSubmit = false
+                                preferenceManager.saveData("isVote", true)
                             }
                         , modifier = Modifier.fillMaxWidth()
                         ) {
